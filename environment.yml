@@ -1,0 +1,6 @@
+name: text-generator
+dependencies:
+    - python=3.6
+    - gensim
+    - smart_open
+    - numpy
