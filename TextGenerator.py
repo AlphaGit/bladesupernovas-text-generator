@@ -10,7 +10,7 @@ import heapq
 import math
 #import keyboard
 
-DEBUG = True
+DEBUG = False
 
 class TextGenerator(object):
     def __init__(self, window=4, verify=2, ofTranslates=2, ofMatches=1, ofOriginalsNearNextWord=0, CommasPerSentence=2, WordsPerCommaOrPeriod=(4,7),
@@ -232,8 +232,9 @@ class TextGenerator(object):
                 else:
                     listoflists.append(self.makeGlove(self.stem_Word(word), self.ofTranslates))
 
-            print("Lists of %d word window =" % windowLen, listoflists)
-            
+            if DEBUG:
+                print("Lists of %d word window =" % windowLen, listoflists)
+
             ## do vanilla search
             idx = 0
             for word_list in listoflists:
@@ -313,7 +314,7 @@ class TextGenerator(object):
                 windowLen = windowLen - 1
         
         if total_verified == 0:
-            print("Matchs =", [])
+            print("Matches =", [])
             return None
 
         def dist(hp, orig):
@@ -351,7 +352,7 @@ class TextGenerator(object):
         for hp in verified_hypo_list:
             matcheStr.append((' '.join(hp[0]), hp[1]))
 
-        print("Matchs =", matcheStr)
+        print("Matches =", matcheStr)
         return self.pickNextword(verified_hypo_list)
 
     def calcCommaLen(self, words):

@@ -1,5 +1,6 @@
-import Tree
+from Tree import Tree
 import functions
+from TextGenerator import TextGenerator
 
 if __name__ == "__main__":
     tree = Tree(3)
@@ -18,12 +19,12 @@ if __name__ == "__main__":
     import pickle
 
     #entailData = sys.argv[1]        # entailData to make tree
-    entailData = "1661-0.txt"
+    entailData = "data/1661-0.txt"
 
     #tree = Tree(4, 3, "SplitedWindows")
     tree = Tree(4)
     words = []
-    with smart_open.smart_open(entailData, 'r') as entail:
+    with smart_open.open(entailData, 'r', encoding='utf-8') as entail:
         for line in entail:
             words.extend(line.strip().split())
 
@@ -50,9 +51,9 @@ if __name__ == "__main__":
     print("yes yes yes yes", tree.calc_frequency("yes yes yes yes"))
 
 if __name__ == "__main__":
-    entailData = "entailData.txt"  # entailData to make tree
-    gloveModel = "glove_model.txt"        # glove model which is converted with glove2word2vector.py
-    commonWordFile = "wiki-100k.txt"    # wiki common word file.
+    entailData = "data/entailData.txt"  # entailData to make tree
+    gloveModel = "data/glove_model.txt"        # glove model which is converted with glove2word2vector.py
+    commonWordFile = "data/wiki-100k.txt"    # wiki common word file.
 
     textgenerator = TextGenerator(window=7, verify=2, ofTranslates=140, ofMatches=150, ofOriginalsNearNextWord=2, CommasPerSentence=1, WordsPerCommaOrPeriod=(3,3),
                                   commonWordCoefficient=(0.0001, 60, 0.001), contextualCoefficient=(1, 1, 2.3))

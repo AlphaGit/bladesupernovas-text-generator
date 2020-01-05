@@ -1,3 +1,6 @@
+from functions import lower_bound, upper_bound
+import operator
+
 class Tree(object):
     """
     Our tree implementation.
