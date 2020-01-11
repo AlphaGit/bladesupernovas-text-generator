@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="TextGenerator.cpp" />
+    <ClCompile Include="Tree.cpp" />
+    <ClCompile Include="Word2vec.cpp" />
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Log.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TextGenerator.h" />
+    <ClInclude Include="Tree.h" />
+    <ClInclude Include="Word2vec.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="OpenBLAS\cblas.h">
+      <Filter>OpenBLAS</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenBLAS\openblas_config.h">
+      <Filter>OpenBLAS</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="OpenBLAS">
+      <UniqueIdentifier>{0c195735-7ae9-4c1c-bc5b-823df295826c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
