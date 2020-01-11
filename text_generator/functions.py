@@ -9,16 +9,24 @@ def lower_bound(a, x, lo=0, hi=None):
     slice of a to be searched.
     """
 
-    L=len(x)
-
     if lo < 0:
         raise ValueError('lo must be non-negative')
+
+    a_len = len(a)
     if hi is None:
-        hi = len(a)
+        hi = a_len
+    elif hi > a_len:
+        raise ValueError('hi must not be higher than the length of the array')
+
+    L=len(x)
     while lo < hi:
         mid = (lo+hi)//2
-        if a[mid][:L] < x: lo = mid+1
-        else: hi = mid
+
+        if a[mid][:L] < x:
+            lo = mid+1
+        else:
+            hi = mid
+
     return lo
 
 def upper_bound(a, x, lo=0, hi=None):
@@ -31,14 +39,23 @@ def upper_bound(a, x, lo=0, hi=None):
     Optional args lo (default 0) and hi (default len(a)) bound the
     slice of a to be searched.
     """
-    L=len(x)
 
     if lo < 0:
         raise ValueError('lo must be non-negative')
+
+    a_len = len(a)
     if hi is None:
-        hi = len(a)
+        hi = a_len
+    elif hi > a_len:
+        raise ValueError('hi must not be higher than the length of the array')
+
+    L=len(x)
     while lo < hi:
         mid = (lo+hi)//2
-        if x < a[mid][:L]: hi = mid
-        else: lo = mid+1
+
+        if x < a[mid][:L]:
+            hi = mid
+        else:
+            lo = mid+1
+
     return lo

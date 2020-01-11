@@ -34,6 +34,13 @@ Running it:
 
 Enter an empty string as input to finish text generation.
 
+Running tests:
+---
+
+```console
+./test.sh
+```
+
 ---
 
 Concept:
