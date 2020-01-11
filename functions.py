@@ -1,10 +1,3 @@
-from typing import Tuple
-import random
-import math
-import os
-import sys
-import operator
-
 def lower_bound(a, x, lo=0, hi=None):
     """Return the index where to insert item x in list a, assuming a is sorted.
 
