@@ -1,4 +1,4 @@
-from functions import lower_bound, upper_bound
+from .functions import *
 import operator
 
 class Tree(object):

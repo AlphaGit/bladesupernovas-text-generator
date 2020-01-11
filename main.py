@@ -1,6 +1,5 @@
-from Tree import Tree
-import functions
-from TextGenerator import TextGenerator
+from text_generator.Tree import Tree
+from text_generator.TextGenerator import TextGenerator
 
 if __name__ == "__main__":
     tree = Tree(3)
