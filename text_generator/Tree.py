@@ -30,10 +30,20 @@ class Tree(object):
             windowSize= min(self.scanWindowSz, length - i)
             shouldInsert = True
             for word in text[i:i+windowSize]:
-                if not(word.isalpha() or (word[:-1].isalpha() and (word[-1]==',' or word[-1]=='.'))):
+                if word.isalpha():
+                    continue
+
+                all_but_last = word[:-1]
+                if not all_but_last.isalpha():
                     shouldInsert = False
                     break
-            if shouldInsert == True:
+
+                last = word[-1]
+                if not (last.isalpha() or last in ['.', ',', '!', '?']):
+                    shouldInsert = False
+                    break
+
+            if shouldInsert:
                 self.records.append(make_record(text[i:i+windowSize]))
 
         self.records.sort()

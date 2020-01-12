@@ -38,16 +38,43 @@ class TreeBuildTestSuite(unittest.TestCase):
             self.assertLessEqual(previous_value, current_value)
 
     def test_words_are_sorted(self):
-        source_words = ['alpha', 'blue', 'charlie', 'delta']
         tree = Tree(2)
-        tree.build(source_words)
+        tree.build(['alpha', 'blue', 'charlie', 'delta'])
         self.assertListIsSorted(tree.records)
 
-        source_words = ['alpha', 'zulu', 'blue', 'whisky', 'tango', 'foxtrot', 'charlie', 'delta']
         tree = Tree(2)
-        tree.build(source_words)
+        tree.build(['alpha', 'zulu', 'blue', 'whisky', 'tango', 'foxtrot', 'charlie', 'delta'])
         self.assertListIsSorted(tree.records)
 
+    def test_words_are_lowercased(self):
+        tree = Tree(2)
+        tree.build(['Alpha', 'Blue', 'ChArLiE', 'DeltA'])
+        for value in tree.records:
+            self.assertEqual(value.lower(), value)
+
+    def test_periods_are_allowed_only_at_end_of_word(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'bl.ue', '.charlie', 'delta'])
+
+        self.assertCountEqual(['alpha.', 'delta'], tree.records)
+
+    def test_commas_are_allowed_only_at_end_of_word(self):
+        tree = Tree(1)
+        tree.build(['alpha,', 'bl,ue', ',charlie', 'delta'])
+
+        self.assertCountEqual(['alpha,', 'delta'], tree.records)
+
+    def test_question_marks_are_allowed_only_at_end_of_word(self):
+        tree = Tree(1)
+        tree.build(['alpha?', 'bl?ue', '?charlie', 'delta'])
+
+        self.assertCountEqual(['alpha?', 'delta'], tree.records)
+
+    def test_exclamation_marks_are_allowed_only_at_end_of_word(self):
+        tree = Tree(1)
+        tree.build(['alpha!', 'bl!ue', '!charlie', 'delta'])
+
+        self.assertCountEqual(['alpha!', 'delta'], tree.records)
 
 if __name__ == 'main':
     unittest.main()
