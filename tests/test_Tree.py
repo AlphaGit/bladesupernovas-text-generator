@@ -76,5 +76,15 @@ class TreeBuildTestSuite(unittest.TestCase):
 
         self.assertCountEqual(['alpha!', 'delta'], tree.records)
 
+    def test_keeps_track_of_the_amount_of_records(self):
+        source_words = ['alpha', 'blue', 'charlie', 'delta']
+        tree = Tree(1)
+        tree.build(source_words)
+        self.assertEqual(4, tree.lenRecords)
+
+        tree = Tree(2)
+        tree.build(source_words)
+        self.assertEqual(4, tree.lenRecords)
+
 if __name__ == 'main':
     unittest.main()

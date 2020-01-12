@@ -17,12 +17,6 @@ class Tree(object):
         if self.debug:
             print("Building Tree...")
 
-        def make_record(word_list):
-            res = ""
-            for word in word_list:
-                res += word.lower() + " "
-            return res.strip()
-
         length = len(text)
         self.records = []
 
@@ -44,13 +38,15 @@ class Tree(object):
                     break
 
             if shouldInsert:
-                self.records.append(make_record(text[i:i+windowSize]))
+                lower_words = [w.lower() for w in text[i:i+windowSize]]
+                self.records.append(' '.join(lower_words))
 
         self.records.sort()
         self.lenRecords = len(self.records)
 
-        # print(self.records)
-        # print("Building Tree done")
+        if self.debug:
+            print(self.records)
+            print("Building Tree done.")
 
     def find_interval(self, searchStr, lo=0, hi=None):
         if (hi == None):
