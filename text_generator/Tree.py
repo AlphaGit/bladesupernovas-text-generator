@@ -6,14 +6,16 @@ class Tree(object):
     Our tree implementation.
     """
 
-    def __init__(self, scanWindowSz):
+    def __init__(self, scanWindowSz, debug=False):
         self.scanWindowSz = scanWindowSz
         self.lenRecords = 0                 # number of records
         self.records = []                   # all hypo records made from entailData for fast search of scanWindow or verification
         self.candidates = []
+        self.debug = debug
 
     def build(self, text:list):
-        print("Building Tree...")
+        if self.debug:
+            print("Building Tree...")
 
         def make_record(word_list):
             res = ""
@@ -185,3 +187,9 @@ class Tree(object):
             max_word = cur_word
 
         return (max_word, max_cnt)
+
+    def print(self):
+        print(f'Scan window size: {self.scanWindowSz}')
+        print(f'Number of records: {self.lenRecords}')
+        print(f'Records: {self.records}')
+        print(f'Candidates: {self.candidates}')
