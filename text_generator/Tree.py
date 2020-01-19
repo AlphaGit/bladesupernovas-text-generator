@@ -127,17 +127,6 @@ class Tree(object):
         self.mergeCandidates(candidates, word_position)
         # print(self.candidates)
 
-    def dist(self, a, b):
-        L = min(len(a), len(b))
-        nSame = 0
-        pattern = 0
-        for i in range(0, L):
-            if a[i] == b[i]:
-                nSame = nSame + 1
-                pattern = pattern + (1<<i)
-        
-        return (nSame, pattern)
-
     def get_words(self, idx:int):
         """
         return word list of vanila serarch ex. [[down the street], [up the street], [down the stair], ...]
