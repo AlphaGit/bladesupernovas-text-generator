@@ -38,7 +38,7 @@ Running tests:
 ---
 
 ```console
-./test.sh
+pytest
 ```
 
 ---

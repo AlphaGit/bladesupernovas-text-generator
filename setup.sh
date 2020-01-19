@@ -19,12 +19,15 @@ if [ ! -f data/entailData.txt ]; then
     wget -O data/entailData.txt https://www.gutenberg.org/files/1661/1661-0.txt
 fi
 
+eval "$(conda shell.bash hook)"
+
 CONDA_ENVS=$(conda env list | awk '{print $1}')
 if ! [[ $CONDA_ENVS = *"text-generator"* ]]; then
     echo "Creating conda text-generator environment."
-    conda env create -f environment.yml
+    conda env create -n text-generator --file requirements.txt python=3.7
 fi
 
+echo "Activating environment..."
 conda activate text-generator
 
 if [ ! -f data/glove_model.txt ]; then
