@@ -86,5 +86,40 @@ class TreeBuildTestSuite(unittest.TestCase):
         tree.build(source_words)
         self.assertEqual(4, tree.lenRecords)
 
+    def test_records_and_length_are_correct_when_no_words_are_accepted(self):
+        tree = Tree(1)
+        tree.build(['alph!a', 'bl.ue', 'charl1e', 'delt@'])
+
+        self.assertEqual([], tree.records)
+        self.assertEqual(0, tree.lenRecords)
+
+class TreeFindIntervalTestSuite(unittest.TestCase):
+    """Tree.find_interval() test cases."""
+
+    def test_finds_the_interval_for_a_particular_entry(self):
+        tree = Tree(1)
+        tree.build(['alpha', 'blue', 'charlie', 'delta'])
+
+        self.assertEqual((0, 0), tree.find_interval('abacus'))
+        # alpha
+        self.assertEqual((1, 1), tree.find_interval('amaranth'))
+        self.assertEqual((1, 1), tree.find_interval('basic'))
+        # blue
+        self.assertEqual((2, 2), tree.find_interval('buzz'))
+        self.assertEqual((2, 2), tree.find_interval('cat'))
+        # charlie
+        self.assertEqual((3, 3), tree.find_interval('cut'))
+        self.assertEqual((3, 3), tree.find_interval('dam'))
+        # delta
+        self.assertEqual((4, 4), tree.find_interval('during'))
+
+    def test_extends_the_interval_for_repeated_words(self):
+        tree = Tree(1)
+        tree.build(['alpha', 'alpha', 'blue', 'charlie', 'delta', 'delta'])
+
+        self.assertEqual((0, 2), tree.find_interval('alpha'))
+        self.assertEqual((2, 3), tree.find_interval('blue'))
+        self.assertEqual((4, 6), tree.find_interval('delta'))
+
 if __name__ == 'main':
     unittest.main()
