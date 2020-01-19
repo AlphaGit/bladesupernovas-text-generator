@@ -55,39 +55,60 @@ class Tree(object):
         to = upper_bound(self.records, searchStr, lo, hi)
         return fro, to
 
-    def mergeCandidates(self, candidates, idx):
+    def mergeCandidates(self, candidates, word_cluster_size):
+        """Merges candidates.
+        word_cluster_size -- number. How many words to consider in each record before we consider them
+          to be the in a single cluster of candidates.
+        candidates -- list(tuple). Each tuple is a (start_idx, end_idx) of candidate words.
+          As such, it is assumed that start_idx <= end_idx.
+        """
         # print("before", self.candidates)
         self.candidates = []
         if (len(candidates) == 0):
             return
 
-        def isSameCluster(a, b, verifyLen):
+        def isSameCluster(a, b, max_index):
             a = a.split()
             b = b.split()
-            if len(a) < verifyLen + 1 or len(b) < verifyLen + 1:
+            # if any of the records has less words than max_index + 1, they're not the same cluster
+            if len(a) < max_index + 1 or len(b) < max_index + 1:
                 return False
-            
-            for i in range (0, verifyLen+1):
+
+            # if any of the words in candidate a is different than the candidate b (up to max_index words),
+            # they're not the same cluster
+            for i in range (0, max_index + 1):
                 if a[i] != b[i]:
                     return False
             return True
 
-
         candidates.sort(key = operator.itemgetter(0, 1))
+        #print(f'candidates: {candidates}')
         self.candidates.append(candidates[0])
         for candy in candidates:
-            if candy[0] > self.candidates[-1][1]:
+            (last_candidate_start_idx, last_candidate_end_idx) = self.candidates[-1]
+            # if the current candidate.start_idx > last candidate.end_idx, this tuple must be higher in general.
+            if candy[0] > last_candidate_end_idx:
                 self.candidates.append(candy)
-            else:
-                if isSameCluster(self.records[self.candidates[-1][0]], self.records[candy[0]], idx):
-                    self.candidates[-1] = (self.candidates[-1][0], max(self.candidates[-1][1], candy[1]))
+            else: # if current candidate.start_idx <= last_candidate.end_idx
+                # if the records are the same comparing up to word_cluster_size words
+                if isSameCluster(self.records[last_candidate_start_idx], self.records[candy[0]], word_cluster_size):
+                    # merge the last candidate and the current one by picking the biggest end_idx
+                    self.candidates[-1] = (last_candidate_start_idx, max(last_candidate_end_idx, candy[1]))
                 else:
+                    # otherwise, add the range as a new candidate
                     self.candidates.append(candy)
 
+    def update_words(self, word_position:int, word_list:list):
+        """Updates the set of available candidates by searching words that expand the current set of candidates.
 
-    def update_words(self, idx:int, word_list:list):
-        # print(idx, word_list)
-        if idx == 0:
+        word_position: indicates the position in the record for which words will be compared.
+          If 0, all records are considered in the search.
+          If not 0, only (lo, hi) combinations from self.candidates are used in the search.
+
+        word_list: the words to evaluate.
+        """
+
+        if word_position == 0:
             candidates = []
             for searchStr in word_list:
                 fro, to = self.find_interval(searchStr + " ")
@@ -97,13 +118,13 @@ class Tree(object):
             candidates = []
             for (fro, to) in self.candidates:
                 for word in word_list:
-                    searchStr = ' '.join(self.records[fro].split()[:idx]) + " " + word + " "
+                    searchStr = ' '.join(self.records[fro].split()[:word_position]) + " " + word + " "
                     froNew, toNew = self.find_interval(searchStr, fro, to)
                     if froNew < toNew:
                         candidates.append((froNew, toNew))
 
         # print(candidates)
-        self.mergeCandidates(candidates, idx)
+        self.mergeCandidates(candidates, word_position)
         # print(self.candidates)
 
     def dist(self, a, b):
