@@ -4,7 +4,7 @@ import gensim
 import smart_open
 import numpy
 import random
-#from Tree import Tree
+from text_generator.Tree import Tree
 import pickle
 import heapq
 import math
