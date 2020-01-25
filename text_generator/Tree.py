@@ -131,11 +131,16 @@ class Tree(object):
         """
         return word list of vanila serarch ex. [[down the street], [up the street], [down the stair], ...]
         here predicted next word is [street, stair, ...]
+
+        idx: minimum amount of words that the tree needs to be built on. Determines how many words will be
+          included in each of the results. Will yield an empty result if idx <= scanWindowSz
         """
 
         resultSet = []
         for (fro, to) in self.candidates:
             for sequence in self.records[fro:to]:
+                # word_list will always have a single record
+                # hence, len(word_list) depends on the amount of words in each record
                 word_list = sequence.split()
                 if (len(word_list) > idx):
                     resultSet.append(' '.join(word_list[:idx+1]))

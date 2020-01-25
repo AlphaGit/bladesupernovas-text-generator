@@ -233,6 +233,27 @@ class TreeUpdateWordsTestSuite(unittest.TestCase):
         tree.update_words(0, ['charlie'])
         self.assertEqual([(2, 4)], tree.candidates)
 
+    def test_clears_candidates_if_words_do_not_extend_candidates(self):
+        tree = Tree(2)
+        tree.build(['alpha', 'blue', 'charlie', 'charlie', 'delta'])
+
+        # records = [
+        #   0  'alpha blue',
+        #   1  'blue charlie',
+        #   2  'charlie charlie'
+        #   3  'charlie delta',
+        #   4  'delta'
+        # ]
+
+        tree.update_words(0, ['alpha back'])
+        self.assertEqual([], tree.candidates)
+
+        tree.update_words(0, ['alpha alpha'])
+        self.assertEqual([], tree.candidates)
+
+        tree.update_words(1, ['alpha back'])
+        self.assertEqual([], tree.candidates)
+
     def test_restricts_candidates_with_further_values_of_word_position(self):
         tree = Tree(3)
         tree.build(['alpha', 'blue', 'charlie', 'charlie', 'delta'])
@@ -253,6 +274,110 @@ class TreeUpdateWordsTestSuite(unittest.TestCase):
 
         tree.update_words(2, ['charlie'])
         self.assertEqual([], tree.candidates)
+
+class TreeGetWordsTestSuite(unittest.TestCase):
+    """Tree.get_words() test cases."""
+
+    def test_returns_word_when_single_word_records(self):
+        tree = Tree(1)
+        tree.build(['alpha', 'blue', 'charlie', 'delta'])
+
+        tree.mergeCandidates([(0, 1)], 0)
+        self.assertEqual([(0, 1)], tree.candidates)
+        self.assertEqual([['alpha']], tree.get_words(0))
+
+    def test_returns_words_from_avaialble_candidates(self):
+        tree = Tree(1)
+        tree.build(['alpha', 'bids', 'blue', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        tree.mergeCandidates([(0, 2)], 0)
+        self.assertEqual([(0, 2)], tree.candidates)
+        self.assertEqual([['alpha'], ['bids']], tree.get_words(0))
+
+        tree.mergeCandidates([(0, 3)], 0)
+        self.assertEqual([(0, 3)], tree.candidates)
+        self.assertEqual([['alpha'], ['bids'], ['blue']], tree.get_words(0))
+
+        tree.mergeCandidates([(0, 4)], 0)
+        self.assertEqual([(0, 4)], tree.candidates)
+        self.assertEqual([['alpha'], ['bids'], ['blue'], ['carves']], tree.get_words(0))
+
+        tree.mergeCandidates([(1, 4)], 0)
+        self.assertEqual([(1, 4)], tree.candidates)
+        self.assertEqual([['bids'], ['blue'], ['carves']], tree.get_words(0))
+
+        tree.mergeCandidates([(2, 4)], 0)
+        self.assertEqual([(2, 4)], tree.candidates)
+        self.assertEqual([['blue'], ['carves']], tree.get_words(0))
+
+        tree.mergeCandidates([(3, 4)], 0)
+        self.assertEqual([(3, 4)], tree.candidates)
+        self.assertEqual([['carves']], tree.get_words(0))
+
+    def test_returns_word_when_multiple_words_records_scanWindow_2(self):
+        tree = Tree(2)
+        tree.build(['alpha', 'bids', 'blue', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        tree.mergeCandidates([(0, 2)], 0)
+        self.assertEqual([(0, 2)], tree.candidates)
+        self.assertEqual([['alpha', 'bids'], ['bids', 'blue']], tree.get_words(1))
+
+        tree.mergeCandidates([(0, 3)], 0)
+        self.assertEqual([(0, 3)], tree.candidates)
+        self.assertEqual([['alpha', 'bids'], ['bids', 'blue'], ['blue', 'carves']], tree.get_words(1))
+
+        tree.mergeCandidates([(0, 4)], 0)
+        self.assertEqual([(0, 4)], tree.candidates)
+        self.assertEqual([['alpha', 'bids'], ['bids', 'blue'], ['blue', 'carves'], ['carves', 'charlie']], tree.get_words(1))
+
+        tree.mergeCandidates([(1, 4)], 0)
+        self.assertEqual([(1, 4)], tree.candidates)
+        self.assertEqual([['bids', 'blue'], ['blue', 'carves'], ['carves', 'charlie']], tree.get_words(1))
+
+        tree.mergeCandidates([(2, 4)], 0)
+        self.assertEqual([(2, 4)], tree.candidates)
+        self.assertEqual([['blue', 'carves'], ['carves', 'charlie']], tree.get_words(1))
+
+        tree.mergeCandidates([(3, 4)], 0)
+        self.assertEqual([(3, 4)], tree.candidates)
+        self.assertEqual([['carves', 'charlie']], tree.get_words(1))
+
+    def test_returns_word_when_multiple_words_records_scanWindow_3(self):
+        tree = Tree(3)
+        tree.build(['alpha', 'bids', 'blue', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        tree.mergeCandidates([(0, 2)], 0)
+        self.assertEqual([(0, 2)], tree.candidates)
+        self.assertEqual([['alpha', 'bids', 'blue'], ['bids', 'blue', 'carves']], tree.get_words(2))
+
+        tree.mergeCandidates([(0, 3)], 0)
+        self.assertEqual([(0, 3)], tree.candidates)
+        self.assertEqual([['alpha', 'bids', 'blue'], ['bids', 'blue', 'carves'], ['blue', 'carves', 'charlie']], tree.get_words(2))
+
+        tree.mergeCandidates([(0, 4)], 0)
+        self.assertEqual([(0, 4)], tree.candidates)
+        self.assertEqual([['alpha', 'bids', 'blue'], ['bids', 'blue', 'carves'], ['blue', 'carves', 'charlie'], ['carves', 'charlie', 'dances']], tree.get_words(2))
+
+        tree.mergeCandidates([(1, 4)], 0)
+        self.assertEqual([(1, 4)], tree.candidates)
+        self.assertEqual([['bids', 'blue', 'carves'], ['blue', 'carves', 'charlie'], ['carves', 'charlie', 'dances']], tree.get_words(2))
+
+        tree.mergeCandidates([(2, 4)], 0)
+        self.assertEqual([(2, 4)], tree.candidates)
+        self.assertEqual([['blue', 'carves', 'charlie'], ['carves', 'charlie', 'dances']], tree.get_words(2))
+
+        tree.mergeCandidates([(3, 4)], 0)
+        self.assertEqual([(3, 4)], tree.candidates)
+        self.assertEqual([['carves', 'charlie', 'dances']], tree.get_words(2))
+
+    def test_ignores_punctuation_at_the_end_of_a_word(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        tree.mergeCandidates([(0, 3)], 0)
+        self.assertEqual([(0, 3)], tree.candidates)
+        self.assertEqual([['alpha'], ['bids'], ['blue']], tree.get_words(0))
+
 
 if __name__ == 'main':
     unittest.main()
