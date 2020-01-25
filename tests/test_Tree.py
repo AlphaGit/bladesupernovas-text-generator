@@ -233,6 +233,30 @@ class TreeUpdateWordsTestSuite(unittest.TestCase):
         tree.update_words(0, ['charlie'])
         self.assertEqual([(2, 4)], tree.candidates)
 
+    def test_does_nothing_for_not_found_words(self):
+        tree = Tree(2)
+        tree.build(['alpha', 'blue', 'charlie', 'charlie', 'delta'])
+
+        self.assertEqual([], tree.candidates) 
+        unchanged_records = ['alpha blue', 'blue charlie', 'charlie charlie', 'charlie delta', 'delta']
+        self.assertEqual(unchanged_records, tree.records)
+
+        tree.update_words(0, ['back'])
+        self.assertEqual([], tree.candidates)
+        self.assertEqual(unchanged_records, tree.records)
+
+        tree.update_words(1, ['back'])
+        self.assertEqual([], tree.candidates)
+        self.assertEqual(unchanged_records, tree.records)
+
+        tree.update_words(0, ['alpha blue'])
+        self.assertEqual([], tree.candidates)
+        self.assertEqual(unchanged_records, tree.records)
+
+        tree.update_words(1, ['alpha blue'])
+        self.assertEqual([], tree.candidates)
+        self.assertEqual(unchanged_records, tree.records)
+
     def test_clears_candidates_if_words_do_not_extend_candidates(self):
         tree = Tree(2)
         tree.build(['alpha', 'blue', 'charlie', 'charlie', 'delta'])
@@ -378,6 +402,125 @@ class TreeGetWordsTestSuite(unittest.TestCase):
         self.assertEqual([(0, 3)], tree.candidates)
         self.assertEqual([['alpha'], ['bids'], ['blue']], tree.get_words(0))
 
+class TreeIsContainTestSuite(unittest.TestCase):
+    """Tree.is_contain() test cases."""
+
+    def test_scanWindow_1(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        self.assertEqual(True, tree.is_contain('alpha'))
+        self.assertEqual(True, tree.is_contain('alpha.'))
+        self.assertEqual(True, tree.is_contain('bids'))
+        self.assertEqual(True, tree.is_contain('blue'))
+
+        self.assertEqual(False, tree.is_contain('bids.'))
+        self.assertEqual(False, tree.is_contain('back'))
+
+    def test_scanWindow_2(self):
+        tree = Tree(2)
+        tree.build(['alpha.', 'bids,', 'blue', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        self.assertEqual(True, tree.is_contain('alpha. bids'))
+        self.assertEqual(True, tree.is_contain('alpha. bids,'))
+        self.assertEqual(True, tree.is_contain('bids'))
+        self.assertEqual(True, tree.is_contain('bids, blue'))
+        self.assertEqual(True, tree.is_contain('blue'))
+        self.assertEqual(True, tree.is_contain('blue carves'))
+
+        self.assertEqual(False, tree.is_contain('bids blue'))
+        self.assertEqual(False, tree.is_contain('bids charlie'))
+
+class TreeCalcFrequencyTestSuite(unittest.TestCase):
+    """Tree.calc_frequency() test cases."""
+
+    def test_scanWindow_1_non_repeated(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        self.assertEqual(1, tree.calc_frequency('alpha'))
+        self.assertEqual(1, tree.calc_frequency('alpha.'))
+        self.assertEqual(1, tree.calc_frequency('bids'))
+        self.assertEqual(1, tree.calc_frequency('blue'))
+
+        self.assertEqual(0, tree.calc_frequency('bids.'))
+        self.assertEqual(0, tree.calc_frequency('back'))
+
+    def test_scanWindow_2_non_repeated(self):
+        tree = Tree(2)
+        tree.build(['alpha.', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        self.assertEqual(1, tree.calc_frequency('alpha. bids'))
+        self.assertEqual(1, tree.calc_frequency('alpha. bids,'))
+        self.assertEqual(1, tree.calc_frequency('bids'))
+        self.assertEqual(1, tree.calc_frequency('bids, blue'))
+        self.assertEqual(1, tree.calc_frequency('blue'))
+
+        self.assertEqual(0, tree.calc_frequency('blue carves'))
+        self.assertEqual(0, tree.calc_frequency('bids blue'))
+        self.assertEqual(0, tree.calc_frequency('bids charlie'))
+
+    def test_scanWindow_1_repeated(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'alpha', 'alpha,', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats', 'blue', 'blue'])
+
+        self.assertEqual(3, tree.calc_frequency('alpha'))
+        self.assertEqual(1, tree.calc_frequency('alpha.'))
+        self.assertEqual(1, tree.calc_frequency('bids'))
+        self.assertEqual(3, tree.calc_frequency('blue'))
+
+        self.assertEqual(0, tree.calc_frequency('bids.'))
+        self.assertEqual(0, tree.calc_frequency('back'))
+
+    def test_scanWindow_2_repeated(self):
+        tree = Tree(2)
+        tree.build(['alpha.', 'alpha', 'alpha,', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats', 'blue', 'blue'])
+
+        self.assertEqual(3, tree.calc_frequency('alpha'))
+        self.assertEqual(3, tree.calc_frequency('blue'))
+
+        self.assertEqual(1, tree.calc_frequency('alpha,'))
+        self.assertEqual(1, tree.calc_frequency('bids'))
+        self.assertEqual(1, tree.calc_frequency('bids, blue'))
+
+        self.assertEqual(0, tree.calc_frequency('alpha. bids,'))
+        self.assertEqual(0, tree.calc_frequency('alpha. bids'))
+        self.assertEqual(0, tree.calc_frequency('blue carves'))
+        self.assertEqual(0, tree.calc_frequency('bids blue'))
+        self.assertEqual(0, tree.calc_frequency('bids charlie'))
+
+class TreeCalcMostFrequentNextWordTestSuite(unittest.TestCase):
+    """Tree.calc_most_frequent_next_word() test cases."""
+
+    def test_scanWindow_1_non_repeated_negative(self):
+        tree = Tree(1)
+        tree.build(['alpha.', 'bids,', 'blue,', 'carves', 'charlie', 'dances', 'delta', 'eats'])
+
+        self.assertEqual(('', 0), tree.calc_most_frequent_next_word('alpha'))
+        self.assertEqual(('', 0), tree.calc_most_frequent_next_word('alpha.'))
+        self.assertEqual(('', 0), tree.calc_most_frequent_next_word('back'))
+        self.assertEqual(('', 0), tree.calc_most_frequent_next_word('something'))
+
+    def test_scanWindow_2_repeated_negative(self):
+        tree = Tree(2)
+        tree.build(['down', 'the', 'street', 'down', 'the', 'path', 'down', 'the', 'well'])
+
+        self.assertEqual(('', 0), tree.calc_most_frequent_next_word('down the'))
+
+    def test_scanWindow_2_repeated_positive(self):
+        tree = Tree(2)
+        tree.build(['down', 'the', 'street', 'down', 'the', 'path', 'down', 'the', 'well'])
+
+        self.assertEqual(('the', 3), tree.calc_most_frequent_next_word('down'))
+        self.assertEqual(('path', 1), tree.calc_most_frequent_next_word('the'))
+
+    def test_scanWindow_3_repeated_positive(self):
+        tree = Tree(3)
+        tree.build(['down', 'the', 'street', 'down', 'the', 'path', 'down', 'the', 'well'])
+
+        self.assertEqual(('the', 3), tree.calc_most_frequent_next_word('down'))
+        self.assertEqual(('path', 1), tree.calc_most_frequent_next_word('down the'))
+        self.assertEqual(('path', 1), tree.calc_most_frequent_next_word('the'))
 
 if __name__ == 'main':
     unittest.main()

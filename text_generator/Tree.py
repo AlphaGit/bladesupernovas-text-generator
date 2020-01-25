@@ -202,7 +202,7 @@ class Tree(object):
 
                 cur_word = word
                 cur_cnt = 1
-        
+
         if cur_cnt > max_cnt:
             max_cnt = cur_cnt
             max_word = cur_word
